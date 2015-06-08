@@ -36,11 +36,16 @@
 	<script type="text/jsx">
 
 		var SearchBar = React.createClass({
+			handleChange: function(){
+				this.props.onFilterInput(
+					this.refs.filterTextInput.getDOMNode().value
+				);
+			},
 			render: function(){
 				return (
 					<div className="row">
 						<div className="col-lg-4 col-lg-offset-4">
-							<input value={this.props.filterText} type="search" className="form-control" placeholder="Search for episode" />
+							<input ref="filterTextInput" value={this.props.filterText} onChange={this.handleChange} type="search" className="form-control" placeholder="Search for episode" />
 						</div>
 					</div>
 				);
@@ -60,7 +65,16 @@
 
 		var EpisodeTable = React.createClass({
 			render: function(){
-				var rows = this.props.episodes.map(function(episode){
+				var props = this.props;
+				var rows = this.props.episodes
+				.filter(function(episode){
+					if (episode.title.toLowerCase().indexOf(props.filterText.toLowerCase()) > -1){
+						return true;
+					}else{
+						return false;
+					}
+				})
+				.map(function(episode){
 					return <EpisodeRow key={episode.title} episode={episode} />
 				});
 				return (
@@ -86,14 +100,19 @@
 		var FilterableEpisodeTable = React.createClass({
 			getInitialState: function(){
 				return {
-					filterText: 'testing 123'
+					filterText: ''
 				};
+			},
+			handleFilterInput: function(filterText){
+				this.setState({
+					filterText: filterText
+				});
 			},
 			render: function(){
 				return (
 					<div className="spacer">
-					<SearchBar filterText={this.state.filterText} />
-					<EpisodeTable episodes={this.props.episodes} />
+					<SearchBar onFilterInput={this.handleFilterInput} filterText={this.state.filterText} />
+					<EpisodeTable filterText={this.state.filterText} episodes={this.props.episodes} />
 					</div>
 				);
 			}
