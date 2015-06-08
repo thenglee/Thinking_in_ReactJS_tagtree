@@ -40,7 +40,7 @@
 				return (
 					<div className="row">
 						<div className="col-lg-4 col-lg-offset-4">
-							<input type="search" className="form-control" placeholder="Search for episode" />
+							<input value={this.props.filterText} type="search" className="form-control" placeholder="Search for episode" />
 						</div>
 					</div>
 				);
@@ -84,10 +84,15 @@
 		});
 
 		var FilterableEpisodeTable = React.createClass({
+			getInitialState: function(){
+				return {
+					filterText: 'testing 123'
+				};
+			},
 			render: function(){
 				return (
 					<div className="spacer">
-					<SearchBar />
+					<SearchBar filterText={this.state.filterText} />
 					<EpisodeTable episodes={this.props.episodes} />
 					</div>
 				);
